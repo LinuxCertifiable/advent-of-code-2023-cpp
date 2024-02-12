@@ -5,9 +5,13 @@
 #include <vector>
 #include <cctype> //std::isdigit
 #include <cmath>
+#include <unordered_map>
+#include <string_view>
+
 
 //Function Declaration 
-void solution(const std::string& filename);
+void solution_to_part_1(const std::string& filename);
+void solution_to_part_2(const std::string& filename);
 
 int main(int argc, char* argv[]) {
 
@@ -27,13 +31,15 @@ int main(int argc, char* argv[]) {
     }
 
     //std::cout<< "Change happened" << std::endl;
-    solution(argv[1]);
-    
+    //solution_to_part_1(argv[1]);
+
+    std::cout << "Running solution 2:" << std::endl;
+    solution_to_part_2(argv[1]);
     return 0;
 }
 
 
-void solution(const std::string& filename) {
+void solution_to_part_1(const std::string& filename) {
     // We need to loop through the file
     std::ifstream file(filename);
     std::string line;
@@ -87,3 +93,42 @@ void solution(const std::string& filename) {
     std::cout<< "The total amount is: " <<total  <<std::endl;
     file.close();
 }
+
+void solution_to_part_2(const std::string& filename) {
+
+    std::ifstream file(filename);
+    std::string line;
+
+    std::array<std::string_view, 9> wordToDigit = 
+        {"one","two","three", "four", "five", "six","seven", "eight", "nine"};
+
+    int sum{};
+    while (std::getline(file,line)) {
+       int d{};
+            for (size_t i = 0; i < line.size(); ++i) {
+                if (const auto c = line[i]; std::isdigit(c)) {
+                    if (0 == d) {
+                        sum += 10 * (c - '0'); // so instead of getting 6,5 to add up to 11, its 6*10 + 5 = 65 -> I was stuck on this for a while🤦‍♂️.
+                    }
+                    d = c - '0'; //Convert from 'char' to 'int' and subtract ASCII value of '0' to get the actual numerical value.
+                } else {
+                    for (int j = 0; j < wordToDigit.size(); ++j) {
+                        if (const auto& w = wordToDigit[j]; 0 == line.compare(i, w.size(), w)) {
+                            i += w.size() - 2;
+                            if (0 == d) {
+                                sum += 10 * (j + 1);
+                            }
+                            d = j + 1;
+                            break;
+                        }
+                    }
+                }
+            }
+            sum += d;
+        }
+        std::cout << sum << std::endl;
+        }
+
+
+        
+
