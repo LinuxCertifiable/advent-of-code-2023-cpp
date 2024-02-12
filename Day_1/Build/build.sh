@@ -1,3 +1,3 @@
 cmake ..
 make
-./day1
+./day1 ../test_data
